@@ -29,9 +29,9 @@ struct ContentView: View {
                             showAlert = true
                         }
                         .alert(isPresented: $showAlert, content: {
-                            Alert(title: Text("НО ИГРА ЕЩЕ В СТАДИИ РАЗРАБОТКИ"),
-                                primaryButton: .default(Text("Ладно")),
-                                secondaryButton: .cancel(Text("Я против"),
+                            Alert(title: Text("Alert"),
+                                primaryButton: .default(Text("Ok")),
+                                secondaryButton: .cancel(Text("Oh..."),
                                                     action: {print("он против")}))
                         })
                         Button("Рофл 2") {
@@ -40,7 +40,7 @@ struct ContentView: View {
                         .actionSheet(isPresented: $showSheet, content: {
                             ActionSheet(title: Text("О как"),
                                         message: Text("О да, все именно окак"),
-                                        buttons: [.cancel({print("кока")})])
+                                        buttons: [.default(Text("Skibid")), .destructive(Text("Net"))])
                         })
                         
                         
