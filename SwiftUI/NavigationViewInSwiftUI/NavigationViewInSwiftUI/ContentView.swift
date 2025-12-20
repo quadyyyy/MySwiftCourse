@@ -16,16 +16,17 @@ struct DetailView: View {
     var body: some View {
         VStack(spacing: 10) {
             Text("Order \(userBuy.cups) cups of \(text)")
-            .navigationBarItems(leading:
-                                    Button("Back to menu") {
-                                            dismiss()
-                                    },
-                                trailing:
-                                    HStack {
-                Button("-") {
-                    guard self.userBuy.cups > 0 else { return }
-                    self.userBuy.cups -= 1
-                }
+            .navigationBarItems(
+                leading:
+                    Button("Back to menu") {
+                            dismiss()
+            },
+                trailing:
+                    HStack {
+                        Button("-") {
+                            guard self.userBuy.cups > 0 else { return }
+                            self.userBuy.cups -= 1
+                    }
                 
                 Button("+") {
                     self.userBuy.cups += 1
