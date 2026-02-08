@@ -1,0 +1,17 @@
+//
+//  CustomTabViewApp.swift
+//  CustomTabView
+//
+//  Created by Куприянов Тимофей on 05.02.2026.
+//
+
+import SwiftUI
+
+@main
+struct CustomTabViewApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
