@@ -12,9 +12,8 @@ import KeychainSwift
 // точно также, для данных небольшого размера, но, в отличии от appstorage, тут хранят private data, по типу токенов и тп
 // keychain синхронизируется во всех устройствах в рамках одного icloud аккаунта
 
-// здесь используется keychain-swift
-
-final class KeychainManager {
+// with package
+final class KeychainWithPackage {
     let keychain: KeychainSwift
     
     init() {
@@ -41,6 +40,64 @@ struct ContentView: View {
         .onAppear {
             userAuthKey = keychain.get("user_authkey") ?? ""
         }
+    }
+}
+
+
+// without package
+class KeychainManager {
+    enum KeychainError: Error {
+        case duplicateEntry
+        case unknown(OSStatus)
+    }
+    
+    static func save(
+        service: String,
+        account: String,
+        password: Data
+    ) throws {
+        let query: [String: AnyObject] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service as AnyObject,
+            kSecAttrAccount as String: account as AnyObject,
+            kSecValueData as String: password as AnyObject
+        ]
+        
+        let status = SecItemAdd(
+            query as CFDictionary,
+            nil
+        )
+        
+        if status == errSecDuplicateItem {
+            throw KeychainError.duplicateEntry
+        } else if status != errSecSuccess {
+            throw KeychainError.unknown(status)
+        }
+        
+        print("saved")
+    }
+    
+    static func get(
+        service: String,
+        account: String,
+    ) -> Data? {
+        let query: [String: AnyObject] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service as AnyObject,
+            kSecAttrAccount as String: account as AnyObject,
+            kSecReturnData as String: kCFBooleanTrue,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        
+        var result: AnyObject?
+        let status = SecItemCopyMatching(
+            query as CFDictionary,
+            &result
+        )
+        
+        print("read status: \(status)")
+        
+        return result as? Data
     }
 }
 
