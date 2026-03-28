@@ -10,9 +10,6 @@ import SwiftUI
 struct ContentView: View {
     
     @State private var selection: TaskSection? = TaskSection.initialValue
-    
-    @State private var allTasks = Task.examples()
-    @State private var userCreatedGroups: [TaskGroup] = TaskGroup.examples()
     @State private var searchTerm: String = ""
     
     var body: some View {
@@ -21,18 +18,9 @@ struct ContentView: View {
             .navigationTitle("Your Tasks")
         } detail: {
             
-            if searchTerm.isEmpty {
-                switch selection {
-                    case .all, .done, .upcoming:
-                        TaskListView(title: "All", selection: selection)
-                    case .list(let taskGroup):
-                        Text("placeholder")
-                    case .none:
-                        Text("none")
-                }
-            } else {
-                StaticTaskListView(title: "All", tasks: allTasks.filter({ $0.title.contains(searchTerm) }))
-            }
+            
+                        TaskListView(title: "All", selection: selection, searchTerm: searchTerm)
+    
         }
         .searchable(text: $searchTerm)
     }

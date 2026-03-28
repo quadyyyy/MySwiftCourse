@@ -17,23 +17,39 @@ struct TaskListView: View {
     
     @State private var inspectorIsShown: Bool = false
     
-    init(title: String, selection: TaskSection?) {
+    let group: CDTaskGroup?
+    
+    init(title: String, selection: TaskSection?, searchTerm: String) {
         self.title = title
         
         var request = CDTask.fetch()
+        if searchTerm.isEmpty {
+            
+            switch selection {
+            case .all:
+                request.predicate = nil
+            case .done:
+                request.predicate = NSPredicate(format: "isCompleted == true")
+            case .upcoming:
+                request.predicate = NSPredicate(format: "isCompleted == false")
+            case .list(let group):
+                // TODO
+                request.predicate = NSPredicate(format: "group == %@",
+                                                group as CVarArg)
+            case nil:
+                request.predicate = .none
+            }
+        } else {
+            request.predicate = NSPredicate(format: "%K CONTAINS[cd] %@", "title_", searchTerm as CVarArg)
+        }
         
         switch selection {
-        case .all:
-            request.predicate = nil
-        case .done:
-            request.predicate = NSPredicate(format: "isCompleted == true")
-        case .upcoming:
-            request.predicate = NSPredicate(format: "isCompleted == false")
+        case .all, .done, .upcoming:
+            group = nil
         case .list(let group):
-            // TODO
-            request.predicate = nil
+            self.group = group
         case nil:
-            request.predicate = .none
+            group = nil
         }
         
         self._tasks = FetchRequest(fetchRequest: request)
@@ -41,13 +57,15 @@ struct TaskListView: View {
     
     var body: some View {
         List(tasks) { task in
-            TaskRow(task: task)
+            TaskRow(task: task, selectedTask: $selectedTask, inspectorIsShown: $inspectorIsShown)
         }
         .navigationTitle(title)
         .toolbar {
             ToolbarItemGroup {
                 Button {
-                    _ = CDTask(title: "New Task", dueDate: Date(), context: context)
+                    let task = CDTask(title: "New Task", dueDate: Date(), context: context)
+                    task.group = group
+                    PersistenceController.shared.save()
                 } label: {
                     Label("Add New Task", systemImage: "plus")
                 }
@@ -60,21 +78,19 @@ struct TaskListView: View {
             }
            
         }
-        .inspector(isPresented: $inspectorIsShown) {
-            Group {
-                if let selectedTask {
-                    Text(selectedTask.title).font(.title)
-                } else {
-                    Text("nothing selected")
-                }
+        .inspector(isPresented: $inspectorIsShown, content: {
+            if let selectedTask {
+                TaskDetailView(task: selectedTask)
+            } else {
+                ContentUnavailableView("Please select a task",
+                                       systemImage: "circle.inset.filled")
             }
-            .frame(minWidth: 100, maxWidth: .infinity)
-        }
+        })
     }
 }
 
 #Preview {
-    TaskListView(title: "All", selection: .all)
+    TaskListView(title: "All", selection: .all, searchTerm: "")
         .environment(\.managedObjectContext,
                       PersistenceController.preview.container.viewContext)
 }

@@ -26,6 +26,20 @@ struct PersistenceController {
             }
         }
     }
+    
+    func save() {
+        let context = container.viewContext
+        
+        guard context.hasChanges else { return }
+        
+        do {
+            try context.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+    
     // MARK: = SwiftUI preview helper
     
     static var preview: PersistenceController = {

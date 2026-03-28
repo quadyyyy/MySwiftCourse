@@ -10,11 +10,16 @@ import SwiftUI
 @main
 struct TaskManagerApp: App {
     let persistentController = PersistenceController.shared
-    
+    @Environment(\.scenePhase) var scenePhase
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistentController.container.viewContext)
+                .onChange(of: scenePhase) { oldValue, newValue in
+                    if newValue == .background {
+                        persistentController.save()
+                    }
+                }
         }
         .commands {
             CommandMenu("Task") {
@@ -28,6 +33,11 @@ struct TaskManagerApp: App {
                 Button("Add new Group") {
                     
                 }
+                
+                Button("Save") {
+                    PersistenceController.shared.save()
+                }
+                
             }
         }
         
