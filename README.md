@@ -13,6 +13,6 @@ Older code, drafts etc. are kept for reference.
 # Useful links
 
 https://skills.sh - skills for your claude code   
-https://swiftpackageindex.com - package index
-https://fuckingapproachableswiftconcurrency.com/en
+https://swiftpackageindex.com - package index  
+https://fuckingapproachableswiftconcurrency.com/en  
 https://quicktype.io - generates code for json reading
