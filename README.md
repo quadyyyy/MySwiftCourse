@@ -14,3 +14,5 @@ Older code, drafts etc. are kept for reference.
 
 https://skills.sh - skills for your claude code   
 https://swiftpackageindex.com - package index
+https://fuckingapproachableswiftconcurrency.com/en
+https://quicktype.io - generates code for json reading
